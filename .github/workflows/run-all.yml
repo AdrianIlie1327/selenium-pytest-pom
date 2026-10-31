@@ -3,6 +3,15 @@ name: run-all-tests
 on:
   workflow_dispatch:
     inputs:
+      branch:
+        description: Branch (or tag/SHA) to test
+        type: string
+        default: master
+      environment:
+        description: Environment to test against
+        type: choice
+        options: [dev, qa]
+        default: dev
       browser:
         description: Browser for the UI tests
         type: choice
@@ -14,6 +23,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.branch }}
 
       - uses: actions/setup-python@v5
         with:
@@ -23,22 +34,27 @@ jobs:
       - run: pip install -r requirements.txt
 
       - name: Run UI tests
+        env:
+          TEST_ENV: ${{ inputs.environment }}
         run: pytest tests/ui --browser ${{ inputs.browser }}
 
       - name: Upload report and screenshots
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ui-results-${{ inputs.browser }}
+          name: ui-results-${{ inputs.environment }}-${{ inputs.browser }}
           path: |
             reports/
             screenshots/
+            allure-results/
           if-no-files-found: ignore
 
   api:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.branch }}
 
       - uses: actions/setup-python@v5
         with:
@@ -48,12 +64,41 @@ jobs:
       - run: pip install -r requirements.txt
 
       - name: Run API tests
+        env:
+          TEST_ENV: ${{ inputs.environment }}
         run: pytest tests/api
 
       - name: Upload report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: api-results
-          path: reports/
+          name: api-results-${{ inputs.environment }}
+          path: |
+            reports/
+            allure-results/
           if-no-files-found: ignore
+
+  allure-report:
+    needs: [ui, api]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: "*-results*"
+          path: artifacts
+
+      - name: Merge Allure results
+        run: |
+          mkdir -p allure-results
+          cp -r artifacts/*/allure-results/. allure-results/
+
+      - name: Generate Allure report
+        run: |
+          npm install -g allure-commandline
+          allure generate allure-results -o allure-report --clean
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: allure-report
+          path: allure-report/

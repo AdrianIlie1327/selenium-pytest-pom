@@ -1,3 +1,4 @@
+import allure
 from selenium.webdriver.common.by import By
 
 from pages.base_page import BasePage
@@ -13,8 +14,10 @@ class CartPage(BasePage):
             return []
         return [el.text for el in self.driver.find_elements(*self.ITEM_NAMES)]
 
+    @allure.step("Click checkout")
     def checkout(self) -> None:
         self.click(self.CHECKOUT_BUTTON)
 
+    @allure.step("Continue shopping")
     def continue_shopping(self) -> None:
         self.click(self.CONTINUE_SHOPPING)

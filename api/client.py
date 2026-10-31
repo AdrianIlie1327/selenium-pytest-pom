@@ -1,4 +1,5 @@
 """Thin wrapper around requests: base URL + default timeout in one place."""
+import allure
 import requests
 
 import config
@@ -12,7 +13,11 @@ class ApiClient:
 
     def request(self, method, path, **kwargs):
         kwargs.setdefault("timeout", self.timeout)
-        return self.session.request(method, f"{self.base_url}{path}", **kwargs)
+        with allure.step(f"{method} {path}"):
+            response = self.session.request(method, f"{self.base_url}{path}", **kwargs)
+            allure.attach(f"{response.status_code} {response.reason}\n\n{response.text}",
+                          name="response", attachment_type=allure.attachment_type.TEXT)
+            return response
 
     def get(self, path, **kwargs):
         return self.request("GET", path, **kwargs)

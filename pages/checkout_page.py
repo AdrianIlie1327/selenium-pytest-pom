@@ -1,3 +1,4 @@
+import allure
 from selenium.webdriver.common.by import By
 
 from pages.base_page import BasePage
@@ -12,14 +13,17 @@ class CheckoutPage(BasePage):
     ERROR_MESSAGE = (By.CSS_SELECTOR, "[data-test='error']")
     COMPLETE_HEADER = (By.CSS_SELECTOR, "[data-test='complete-header']")
 
+    @allure.step("Fill checkout details ({first} {last}, {postal})")
     def fill_details(self, first: str, last: str, postal: str) -> None:
         self.type_text(self.FIRST_NAME, first)
         self.type_text(self.LAST_NAME, last)
         self.type_text(self.POSTAL_CODE, postal)
 
+    @allure.step("Continue to order overview")
     def continue_to_overview(self) -> None:
         self.click(self.CONTINUE_BUTTON)
 
+    @allure.step("Finish the order")
     def finish(self) -> None:
         self.click(self.FINISH_BUTTON)
 

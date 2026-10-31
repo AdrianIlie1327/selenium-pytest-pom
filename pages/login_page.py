@@ -1,3 +1,4 @@
+import allure
 from selenium.webdriver.common.by import By
 
 from pages.base_page import BasePage
@@ -10,10 +11,12 @@ class LoginPage(BasePage):
     LOGIN_BUTTON = (By.ID, "login-button")
     ERROR_MESSAGE = (By.CSS_SELECTOR, "[data-test='error']")
 
+    @allure.step("Open the login page")
     def open(self) -> "LoginPage":
         self.open_url("/")
         return self
 
+    @allure.step("Log in as {username}")
     def login(self, username: str, password: str) -> None:
         self.type_text(self.USERNAME_INPUT, username)
         self.type_text(self.PASSWORD_INPUT, password)

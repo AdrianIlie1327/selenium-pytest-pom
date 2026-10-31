@@ -29,13 +29,23 @@ pytest tests/ui/test_login.py    # one file
 pytest -k "sort"                 # tests whose name contains "sort"
 ```
 
+### Environments
+
+Settings per environment live in `envs/<name>.env` (`dev` and `qa`). Pick one
+with `TEST_ENV` (default `dev`); real environment variables still override the file.
+
+```bash
+TEST_ENV=qa pytest               # Windows PowerShell: $env:TEST_ENV="qa"; pytest
+```
+
 Output: an HTML report in `reports/report.html`, and a screenshot in
 `screenshots/` for every failed test.
 
 ## Structure
 
 ```
-config.py            base URLs, timeout, demo credentials
+config.py            loads envs/<TEST_ENV>.env + demo credentials
+envs/                dev.env, qa.env: base URLs and timeout per environment
 conftest.py          UI fixtures (driver, login_page, inventory_page), CLI options, failure screenshots
 pages/
   base_page.py       explicit waits + click/type/get_text helpers
