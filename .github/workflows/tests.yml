@@ -33,4 +33,5 @@ jobs:
           path: |
             reports/
             screenshots/
+            allure-results/
           if-no-files-found: ignore

@@ -1,4 +1,5 @@
 selenium>=4.25
 pytest>=8.0
 pytest-html>=4.1
+allure-pytest>=2.13
 requests>=2.32

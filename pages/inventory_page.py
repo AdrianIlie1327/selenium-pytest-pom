@@ -1,3 +1,4 @@
+import allure
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
 
@@ -45,18 +46,23 @@ class InventoryPage(BasePage):
         return 0
 
     # --- actions ----------------------------------------------------------
+    @allure.step("Add '{product_name}' to cart")
     def add_to_cart(self, product_name: str) -> None:
         self.click(self._add_button(product_name))
 
+    @allure.step("Remove '{product_name}' from cart")
     def remove_from_cart(self, product_name: str) -> None:
         self.click(self._remove_button(product_name))
 
+    @allure.step("Sort products by '{visible_text}'")
     def sort_by(self, visible_text: str) -> None:
         Select(self.find(self.SORT_DROPDOWN)).select_by_visible_text(visible_text)
 
+    @allure.step("Open the cart")
     def open_cart(self) -> None:
         self.click(self.CART_LINK)
 
+    @allure.step("Log out")
     def logout(self) -> None:
         self.click(self.BURGER_MENU)
         self.click(self.LOGOUT_LINK)
