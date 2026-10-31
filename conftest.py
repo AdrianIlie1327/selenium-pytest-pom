@@ -53,6 +53,14 @@ def driver(request):
         options.add_argument("--window-size=1920,1080")
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-dev-shm-usage")
+        # SauceDemo's password is in public breach lists, so Chrome pops up a
+        # "change your password" bubble that swallows clicks. Turn it off.
+        options.add_argument("--disable-features=PasswordLeakDetection")
+        options.add_experimental_option("prefs", {
+            "credentials_enable_service": False,
+            "profile.password_manager_enabled": False,
+            "profile.password_manager_leak_detection": False,
+        })
         # Selenium Manager (built into Selenium 4) downloads the right driver.
         drv = webdriver.Chrome(options=options)
 
